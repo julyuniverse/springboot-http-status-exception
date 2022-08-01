@@ -48,7 +48,7 @@ public class AlimtalkService {
 
         HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler()); // ResponseErrorHandler를 재 구현한 클래스로 설정
+        restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler()); // ResponseErrorHandler 인터페이스를 재 구현한 클래스로 설정
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         ResponseEntity<ResponseSearchMessageDeliveryResultsDto> responseEntity = restTemplate.exchange(
                 "https://sens.apigw.ntruss.com/alimtalk/v2/services/" + this.serviceId + "/messages/" + messageId,
