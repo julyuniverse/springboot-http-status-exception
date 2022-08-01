@@ -39,13 +39,11 @@ public class AlimtalkService {
     // 메시지 발송 결과 조회
     public ResponseSearchMessageDeliveryResultsDto searchMessageDeliveryResults(String messageId) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, InterruptedException {
         Long time = System.currentTimeMillis();
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-ncp-apigw-timestamp", time.toString());
         headers.set("x-ncp-iam-access-key", this.accessKey);
         String signature = makeSearchMessageDeliveryResultsSignature(time, messageId);
         headers.set("x-ncp-apigw-signature-v2", signature);
-
         HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler()); // ResponseErrorHandler 인터페이스를 재 구현한 클래스로 설정
@@ -63,19 +61,20 @@ public class AlimtalkService {
             int count = 0;
 
             while (count < 10) { // 요청을 최대 10번까지만 설정
-                Thread.sleep(1000); // 1초 대기
+                Thread.sleep(4000); // 4초 대기 (총 Thread.sleep은 mysql wait_timeout보다 작도록 설정. ex] 4X10=40 < wait_timeout=40 = 에러 발생)
 
+                time = System.currentTimeMillis();
                 headers = new HttpHeaders();
                 headers.set("x-ncp-apigw-timestamp", time.toString());
                 headers.set("x-ncp-iam-access-key", this.accessKey);
-                signature = makeSearchMessageDeliveryResultsSignature(time, "2e54bd4049d349cf9fed3ff1c0cf176c22");
+                signature = makeSearchMessageDeliveryResultsSignature(time, "2e54bd4049d349cf9fed3ff1c0cf176c11");
                 headers.set("x-ncp-apigw-signature-v2", signature);
                 httpEntity = new HttpEntity<>("", headers);
                 restTemplate = new RestTemplate();
-                restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler()); // ResponseErrorHandler를 재 구현한 클래스로 설정
+                restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler()); // ResponseErrorHandler 인터페이스를 재 구현한 클래스로 설정
                 restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
                 responseEntity = restTemplate.exchange(
-                        "https://sens.apigw.ntruss.com/alimtalk/v2/services/" + this.serviceId + "/messages/" + "2e54bd4049d349cf9fed3ff1c0cf176c22",
+                        "https://sens.apigw.ntruss.com/alimtalk/v2/services/" + this.serviceId + "/messages/" + "2e54bd4049d349cf9fed3ff1c0cf176c11",
                         HttpMethod.GET,
                         httpEntity,
                         ResponseSearchMessageDeliveryResultsDto.class
